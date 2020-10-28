@@ -11,7 +11,6 @@ def get_loguru_config(
         os.getenv("LOGGING_DEFAULT_PROD_CONF", "TRUE")
     ),
     level: Union[None, str, int] = os.getenv("LOGGING_LEVEL", "INFO"),
-    extra: bool = True,
 ) -> dict:
     """
     Возвращает словарь с к конфигурацией логера Loguru, в зависимости от среды эксплуатации и доп. параметров.
@@ -44,15 +43,12 @@ def get_loguru_config(
         }
     else:
 
-        extra_vars_substring = " |{extra}" if extra else ""
-
         config = {
             "handlers": [
                 {
                     "sink": sys.stdout,
                     "level": level,
-                    "format": "<level>{level: <8}</level>|<cyan>{name:<12}</cyan>:<cyan>{function:<24}</cyan>:<cyan>{line}</cyan> - <level>{message:>32}</level>"
-                    + extra_vars_substring,
+                    "format": "<level>{level: <8}</level>|<cyan>{name:<12}</cyan>:<cyan>{function:<24}</cyan>:<cyan>{line}</cyan> - <level>{message:>32}</level> |{extra}"
                 },
             ],
         }

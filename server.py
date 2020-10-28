@@ -17,56 +17,55 @@ async def archivate(
     delay_chunks_sending=0,
 ):
 
-    logger.debug(
-        "asd",
-        extra={
-            "base_photos_path": file_storage_path,
-            "delay_chunks_sending": delay_chunks_sending,
-        },
-    )
     archive_hash = request.match_info.get("archive_hash")
     archive_path = os.path.join(file_storage_path, archive_hash)
     if not os.path.exists(archive_path):
         raise web.HTTPNotFound(reason="Архив не существует или был удален")
 
     response = web.StreamResponse()
-    response.headers["Content-Disposition"] = "Attachment;filename=some_file.xyz"
+    response.headers["Content-Disposition"] = f"Attachment;filename={archive_hash}.zip"
     await response.prepare(request)
 
-    proc = await asyncio.create_subprocess_exec(
+    zip_process = await asyncio.create_subprocess_exec(
         "zip",
         "-r",
         "-",
-        "test_photos",
+        archive_path,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
+
     try:
-        while not proc.stdout.at_eof():
-            archive_chunk = await proc.stdout.read(chunk_size)
-            logger.debug("Sending archive chunk ...")
+        logger.debug("start downloading", extra={"archive_hash": archive_hash})
+        while not zip_process.stdout.at_eof():
+            archive_chunk = await zip_process.stdout.read(chunk_size)
+            logger.debug(
+                "Sending archive chunk ...", extra={"archive_hash": archive_hash}
+            )
             await response.write(archive_chunk)
             await asyncio.sleep(delay_chunks_sending)
+        else:
+            logger.info("downloading complete", extra={"archive_hash": archive_hash})
 
     except (asyncio.CancelledError, KeyboardInterrupt):
         logger.info("Download was interrupted")
     except ConnectionResetError:
-        logger.info("Download failed - ConnectionResetError")
+        logger.warning("Download failed - ConnectionResetError")
     except BaseException as err:
         logger.exception(f"Download was interrupted by exception: {err}")
     finally:
-        logger.info(f"proc code - {proc.returncode}")
-        if proc.returncode is None:
+        logger.debug(f"proc code - {zip_process.returncode}")
+        if zip_process.returncode is None:
             try:
-                proc.kill()
-                await proc.communicate()
-                logger.debug(f"Archive process with PID: {proc.pid} was killed")
+                zip_process.kill()
+                await zip_process.communicate()
+                logger.debug(f"Archive process with PID: {zip_process.pid} was killed")
             except ProcessLookupError:
                 logger.debug(f"Can not find process to kill it")
 
         response.force_close()
 
-        return response
+    return response
 
 
 async def handle_index_page(request):
