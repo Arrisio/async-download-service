@@ -18,7 +18,6 @@ def get_loguru_config(
     :param use_default_prod_configuration: Автоматически применяются настройки для боевого режима: Вывод в json формат; ERROR и CRITICAL логи выводятся в stderr. Если True - Все остальные параметры (кроме level) игнорируются
     :param level: уровень логирования
     :param extra:  будет ли в вывод добавляться словарь с extra параметрами
-    :param notify_with_telegram: Надо ли отправлять уведомления об ошибках через телегу. Если да, то должны быть определены переменные окружения BOT_TOKEN и SUBSCRIBER_CHAT_ID
     :return:
     """
 
@@ -48,7 +47,7 @@ def get_loguru_config(
                 {
                     "sink": sys.stdout,
                     "level": level,
-                    "format": "<level>{level: <8}</level>|<cyan>{name:<12}</cyan>:<cyan>{function:<24}</cyan>:<cyan>{line}</cyan> - <level>{message:>32}</level> |{extra}"
+                    "format": "<level>{level: <8}</level>|<cyan>{name:<12}</cyan>:<cyan>{function:<24}</cyan>:<cyan>{line}</cyan> - <level>{message:>32}</level> |{extra}",
                 },
             ],
         }
