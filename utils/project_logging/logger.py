@@ -17,7 +17,6 @@ def get_loguru_config(
 
     :param use_default_prod_configuration: Автоматически применяются настройки для боевого режима: Вывод в json формат; ERROR и CRITICAL логи выводятся в stderr. Если True - Все остальные параметры (кроме level) игнорируются
     :param level: уровень логирования
-    :param extra:  будет ли в вывод добавляться словарь с extra параметрами
     :return:
     """
 
