@@ -17,7 +17,7 @@ async def archivate(
     delay_chunks_sending=0,
 ):
 
-    archive_hash = request.match_info.get("archive_hash")
+    archive_hash = request.match_info["archive_hash"]
     archive_path = os.path.join(file_storage_path, archive_hash)
     if not os.path.exists(archive_path):
         raise web.HTTPNotFound(reason="Архив не существует или был удален")
