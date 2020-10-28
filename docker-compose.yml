@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  async-download-service:
+    restart: on-failure
+    image: async-download-service:1.0
+    container_name: async-download-service
+    build:
+      context: .
+#    env_file:
+#      - .env
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/app/
+    env_file:
+      - .env
+    tty: true
+#    command: ['python3','server.py']
+    
