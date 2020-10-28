@@ -7,14 +7,12 @@ services:
     container_name: async-download-service
     build:
       context: .
-#    env_file:
-#      - .env
     ports:
       - 8080:8080
     volumes:
       - .:/app/
     env_file:
       - .env
-    tty: true
-#    command: ['python3','server.py']
+#    tty: true
+    command: ['python3','server.py']
     
