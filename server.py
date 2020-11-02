@@ -30,7 +30,8 @@ async def archivate(
         "zip",
         "-r",
         "-",
-        archive_path,
+        ".",
+        cwd=archive_path,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
@@ -97,7 +98,7 @@ def get_cli_args():
 
 if __name__ == "__main__":
     args = get_cli_args()
-    if args.logging or True:
+    if args.logging:
         logger.configure(
             **get_loguru_config(
                 use_default_prod_configuration=False,
