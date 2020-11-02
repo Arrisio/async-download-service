@@ -48,12 +48,16 @@ async def archivate(
         else:
             logger.info("downloading complete", extra={"archive_hash": archive_hash})
 
-    except (asyncio.CancelledError, KeyboardInterrupt):
-        logger.info("Download was interrupted")
-    except ConnectionResetError:
-        logger.warning("Download failed - ConnectionResetError")
-    except BaseException as err:
-        logger.exception(f"Download was interrupted by exception: {err}")
+        return response
+
+    except (
+        asyncio.CancelledError,
+        KeyboardInterrupt,
+        ConnectionResetError,
+        SystemExit,
+    ) as err:
+        logger.warning("Download was interrupted", extra={"exception": err})
+        raise
     finally:
         logger.debug(f"proc code - {zip_process.returncode}")
         if zip_process.returncode is None:
@@ -65,8 +69,6 @@ async def archivate(
                 logger.debug(f"Can not find process to kill it")
 
         response.force_close()
-
-    return response
 
 
 async def handle_index_page(request):
