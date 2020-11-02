@@ -68,8 +68,6 @@ async def archivate(
             except ProcessLookupError:
                 logger.debug(f"Can not find process to kill it")
 
-        response.force_close()
-
 
 async def handle_index_page(request):
     async with aiofiles.open("index.html", mode="r") as index_file:
